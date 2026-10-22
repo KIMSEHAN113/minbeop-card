@@ -1,0 +1,30 @@
+name: Send card (매일 아침 카톡)
+
+on:
+  schedule:
+    - cron: "41 21 * * *"  # 매일 06:41 (한국시간). GitHub 예약은 보통 10~20분 늦게 돌아서 7시 전후에 도착
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "보낼 카드 날짜 (YYYY-MM-DD, 비우면 오늘)"
+        required: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Send KakaoTalk
+        env:
+          KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          CARD_URL: https://kimsehan113.github.io/minbeop-card/
+          SEND_DATE: ${{ inputs.date }}
+        run: |
+          if [ -z "$KAKAO_REFRESH_TOKEN" ]; then echo "카카오 연결 전이라 건너뜀"; exit 0; fi
+          python scripts/kakao.py

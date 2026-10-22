@@ -1,0 +1,26 @@
+name: Kakao setup (최초 1회)
+
+# 카카오 로그인 후 받은 주소(…/minbeop-card/?code=…)로 토큰을 받아 KAKAO_REFRESH_TOKEN Secret 에 저장한다.
+# 인가 코드는 10분 안에 한 번만 쓸 수 있어서, 로그인 직후에 바로 실행해야 한다.
+on:
+  workflow_dispatch:
+    inputs:
+      code:
+        description: "카카오 로그인 후 주소창의 주소 전체"
+        required: true
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Exchange code and save token
+        env:
+          KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          CARD_URL: https://kimsehan113.github.io/minbeop-card/
+        run: python scripts/kakao.py setup
