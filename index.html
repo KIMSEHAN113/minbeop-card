@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>오늘의 민법 카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* 휴대폰 한 손 세로 스크롤: 머리말 → OX 5문 → 조문 3 → 판례 1. 법전 같은 명조 제목 + 깔끔한 고딕 본문 */
+:root {
+  --bg: #f3f5f8;
+  --paper: #ffffff;
+  --ink: #18202c;
+  --muted: #5c6878;
+  --line: #dde3eb;
+  --accent: #1f3a68;        /* 법원 남색 */
+  --accent-soft: #e6ecf6;
+  --o: #17795a; --o-soft: #e2f3ec;
+  --x: #b6343a; --x-soft: #f9e5e6;
+  --kakao: #fee500; --kakao-ink: #191919; --chat: #b2c7d9;
+  --f-display: "Nanum Myeongjo", "AppleMyungjo", "Batang", serif;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --e1: #1f3a68; --e2: #6b3f8f; --e3: #2f6f5e; --e4: #8a4b1f;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --e1: #3b5d99; --e2: #8a62ad; --e3: #3f8a76; --e4: #a8662f;
+  --bg: #10141b; --paper: #18202b; --ink: #e8edf4; --muted: #9aa6b6; --line: #2b3646;
+  --accent: #9db8e6; --accent-soft: #1f2c42;
+  --o: #5fcfa3; --o-soft: #143528; --x: #f08a8f; --x-soft: #3a1c1f; --chat: #2a3a4a;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --e1: #3b5d99; --e2: #8a62ad; --e3: #3f8a76; --e4: #a8662f;
+  --bg: #10141b; --paper: #18202b; --ink: #e8edf4; --muted: #9aa6b6; --line: #2b3646;
+  --accent: #9db8e6; --accent-soft: #1f2c42;
+  --o: #5fcfa3; --o-soft: #143528; --x: #f08a8f; --x-soft: #3a1c1f; --chat: #2a3a4a;
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { color-scheme: light dark; } body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+.wrap { max-width: 640px; margin: 0 auto; padding-block: 20px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1, h2 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+.label { font-size: 12px; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+
+/* 미리보기 전용 */
+.preview { display: grid; gap: 14px; }
+.days { display: flex; gap: 8px; flex-wrap: wrap; }
+.days button { font: inherit; font-size: 14px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+.days button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.chat { background: var(--chat); border-radius: var(--r); padding: 16px; }
+.kcard { background: #fff; color: var(--kakao-ink); border-radius: 12px; overflow: hidden; max-width: 290px; box-shadow: 0 1px 2px rgb(0 0 0 / .12); }
+.kcard .thumb { background: #1f3a68; color: #fff; padding: 18px 16px; font-family: var(--f-display); }
+.kcard .thumb small { display: block; font-family: var(--f-body); font-size: 11px; opacity: .8; letter-spacing: .06em; }
+.kcard .thumb b { font-size: 21px; line-height: 1.35; }
+.kcard .txt { padding: 12px 14px 4px; font-size: 13px; line-height: 1.5; }
+.kcard .txt strong { display: block; font-size: 14px; }
+.kcard .txt span { color: #555; }
+.kcard .kbtn { margin: 10px 12px 12px; background: #f2f2f2; border-radius: 6px; text-align: center; font-size: 13px; padding: 8px; }
+.kmeta { font-size: 12px; color: var(--muted); }
+
+/* 머리말 */
+header { display: grid; gap: 6px; }
+header h1 { font-size: clamp(26px, 7vw, 34px); line-height: 1.25; }
+header .sub { color: var(--muted); font-size: 14px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.chip { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+section { display: grid; gap: 12px; }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+.sec-head h2 { font-size: 21px; }
+.score { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* OX 문항 */
+.q { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; }
+.q .no { font-family: var(--f-display); font-weight: 800; color: var(--accent); font-size: 18px; }
+.q p { margin: 0; }
+.ox { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ox button { font: 600 22px/1 var(--f-body); padding: 12px 0; border-radius: 10px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+.ox button:focus-visible, .days button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ox button[data-v="O"] { color: var(--o); }
+.ox button[data-v="X"] { color: var(--x); }
+.q.done .ox button { cursor: default; opacity: .45; }
+.q.done .ox button.picked { opacity: 1; border-color: currentColor; }
+.ans { border-radius: 10px; padding: 14px; font-size: 15px; display: grid; gap: 10px; }
+.ans.right { background: var(--o-soft); }
+.ans.wrong { background: var(--x-soft); }
+.ans .verdict { font-weight: 600; }
+.ans .verdict b { font-size: 17px; }
+.ans .fix { border-left: 3px solid var(--o); padding-left: 10px; }
+.ans .src { font-size: 12px; color: var(--muted); }
+
+/* 조문 */
+.art { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+.art h3 { margin: 0 0 6px; font-family: var(--f-display); font-size: 17px; }
+.art p { margin: 0; font-size: 15px; white-space: pre-line; }
+
+/* 판례 */
+.case { background: var(--accent-soft); border-radius: var(--r); padding: 18px; display: grid; gap: 10px; }
+.case blockquote { margin: 0; font-family: var(--f-display); font-size: 17px; line-height: 1.75; }
+.case .point { font-size: 15px; }
+.case .src { font-size: 12px; color: var(--muted); }
+
+.src-badge { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+.ex { font-weight: 600; padding: 2px 9px; border-radius: 6px; color: var(--paper); }
+.ex[data-e="법무사"] { background: var(--e1); } .ex[data-e="법원행시"] { background: var(--e2); }
+.ex[data-e="법원9급"] { background: var(--e3); } .ex[data-e="변호사시험"] { background: var(--e4); }
+.yr { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 600; }
+.ans dl { margin: 0; display: grid; gap: 10px; }
+.ans dt { font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+.ans dd { margin: 2px 0 0; }
+.ans .keyline { font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px; }
+.connect { background: var(--paper); border: 2px solid var(--accent); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
+.connect h2 { font-size: 20px; } .connect p { margin: 0; }
+.connect textarea { width: 100%; font: 13px/1.4 ui-monospace, monospace; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); resize: none; }
+.connect button, .daynav button { font: 600 15px var(--f-body); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--accent); color: var(--paper); cursor: pointer; }
+.daynav { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.daynav button { background: var(--paper); color: var(--ink); padding: 6px 12px; font-size: 14px; }
+.daynav button:disabled { opacity: .35; cursor: default; }
+.daynav span { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+footer { font-size: 12px; color: var(--muted); display: grid; gap: 4px; border-top: 1px solid var(--line); padding-top: 14px; }
+@media (prefers-reduced-motion: no-preference) { .ans { animation: in .25s ease-out; } @keyframes in { from { transform: translateY(-4px); } } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="connect" id="connect" hidden>
+    <h2>카카오 연결 코드</h2>
+    <p>아래 주소 전체를 복사해서 알려준 사람에게 바로 보내주세요. 10분 안에 써야 해요.</p>
+    <textarea id="code-url" readonly rows="4"></textarea>
+    <button type="button" id="copy-code">주소 복사</button>
+  </div>
+  <nav class="daynav" id="daynav" hidden>
+    <button type="button" id="prev">← 이전</button>
+    <span id="navlabel"></span>
+    <button type="button" id="next">다음 →</button>
+  </nav>
+  <div class="preview" id="preview" hidden>
+    <div class="label">미리보기 · 날짜를 눌러 바꿔 보세요</div>
+    <div class="days" id="days"></div>
+    <div class="chat">
+      <div class="kmeta" style="margin-bottom:8px">카카오톡 '나와의 채팅' · 오전 7:00</div>
+      <div class="kcard">
+        <div class="thumb"><small id="kc-date"></small><b id="kc-topic"></b></div>
+        <div class="txt"><strong id="kc-title"></strong><span id="kc-desc"></span></div>
+        <div class="kbtn">오늘 문제 풀기</div>
+      </div>
+    </div>
+    <div class="label" style="margin-top:6px">↓ 카드를 누르면 열리는 화면</div>
+  </div>
+
+  <header>
+    <div class="label" id="h-date"></div>
+    <h1 id="h-topic"></h1>
+    <div class="sub" id="h-sub"></div>
+    <div class="chips" id="h-chips"></div>
+  </header>
+
+  <section aria-labelledby="s-ox">
+    <div class="sec-head"><h2 id="s-ox">기출 OX 5문</h2><span class="score" id="score"></span></div>
+    <div id="ox" style="display:grid;gap:12px"></div>
+  </section>
+
+  <section aria-labelledby="s-art">
+    <div class="sec-head"><h2 id="s-art">오늘의 조문</h2></div>
+    <div id="arts" style="display:grid;gap:10px"></div>
+  </section>
+
+  <section aria-labelledby="s-case">
+    <div class="sec-head"><h2 id="s-case">오늘의 판례</h2></div>
+    <div class="case" id="case"></div>
+  </section>
+
+  <footer>
+    <div>기출 지문: 법원행정처 공개 법무사·법원행정고등고시·법원9급 시험 문제와 확정정답, 법무부 공개 변호사시험 선택형 문제와 확정정답</div>
+    <div id="law-ver"></div>
+    <div>해설은 AI가 작성했어요. 틀린 곳이 있을 수 있으니 교재로 한 번 더 확인하세요.</div>
+  </footer>
+</div>
+
+<script>
+const CIRC = "①②③④⑤";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch { return {}; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+function render(day) {
+  const key = "ox-" + day.date;
+  const picks = store.get(key);
+  $("h-date").textContent = day.dateLabel + " · 민법";
+  $("h-topic").textContent = day.topic;
+  $("h-sub").textContent = `같은 주제를 ${day.exams.length}개 시험 기출에서 골라 OX로 풀어요.`;
+  $("h-chips").innerHTML = `<span class="chip">${esc(day.part)}</span>` + day.exams.map((e) => `<span class="ex" data-e="${e}">${e}</span>`).join("");
+  $("kc-date").textContent = day.dateLabel + " · 오늘의 민법";
+  $("kc-topic").textContent = day.topic;
+  $("kc-title").textContent = `${day.exams.length}개 시험 기출 OX 5문 · 조문 3 · 판례 1`;
+  $("kc-desc").textContent = day.exams.join(" · ") + " 기출";
+
+  const ox = $("ox");
+  ox.innerHTML = "";
+  day.ox.forEach((q, i) => {
+    const el = document.createElement("div");
+    el.className = "q";
+    el.innerHTML = `<div class="src-badge"><span class="no">${i + 1}</span><span class="ex" data-e="${q.exam}">${q.exam}</span><span class="yr">${q.year}년 기출 · 문${q.no} ${q.mark}</span></div><p>${esc(q.text)}</p>
+      <div class="ox"><button type="button" data-v="O" aria-label="맞다 O">O</button><button type="button" data-v="X" aria-label="틀리다 X">X</button></div>`;
+    const reveal = (v) => {
+      el.classList.add("done");
+      el.querySelectorAll("button").forEach((b) => { b.disabled = true; b.classList.toggle("picked", b.dataset.v === v); });
+      const ok = v === q.answer;
+      const a = document.createElement("div");
+      a.className = "ans " + (ok ? "right" : "wrong");
+      a.innerHTML = `<div class="verdict">${ok ? "맞았어요" : "아쉬워요"} · 정답 <b>${q.answer}</b></div>
+        <div class="keyline">${esc(q.key)}</div>
+        <dl>
+          <div><dt>자세히</dt><dd>${esc(q.detail)}</dd></div>
+          ${q.fix ? `<div class="fix"><dt>바르게 고치면</dt><dd>${esc(q.fix)}</dd></div>` : ""}
+          <div><dt>근거</dt><dd>${esc(q.basis)}</dd></div>
+          <div><dt>함정 포인트</dt><dd>${esc(q.trap)}</dd></div>
+          <div><dt>같이 알아두기</dt><dd>${esc(q.more)}</dd></div>
+        </dl>
+        <div class="src">${esc(q.label)} 문${q.no} ${q.mark} 지문 · ${q.year}년 시행</div>`;
+      el.appendChild(a);
+    };
+    el.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+      picks[i] = b.dataset.v; store.set(key, picks); reveal(b.dataset.v); updateScore();
+    }));
+    if (picks[i]) reveal(picks[i]);
+    ox.appendChild(el);
+  });
+  function updateScore() {
+    const done = Object.keys(picks).length;
+    const right = Object.entries(picks).filter(([i, v]) => day.ox[i].answer === v).length;
+    $("score").textContent = done ? `${done}/5 풀이 · ${right}개 맞힘` : "탭해서 풀어 보세요";
+  }
+  updateScore();
+
+  $("arts").innerHTML = day.articles.map((a) => {
+    const [head, ...rest] = a.text.split("\n");
+    const m = head.match(/^(제[^)]+\))\s*(.*)$/);
+    const title = m ? m[1] : head;
+    const body = [m && m[2] ? m[2] : "", ...rest].filter(Boolean).join("\n");
+    return `<div class="art"><h3>민법 ${esc(title)}</h3><p>${esc(body)}</p></div>`;
+  }).join("");
+
+  const c = day.case;
+  $("case").innerHTML = `<div class="src-badge"><span class="ex" data-e="${c.exam}">${c.exam}</span><span class="yr">${c.year}년 기출 · 문${c.no} ${c.mark} · 정답 ${c.answer}</span></div><blockquote>${esc(c.text)}</blockquote>
+    <div class="point"><b>포인트</b> ${esc(c.key)}</div><div class="point"><b>같이 알아두기</b> ${esc(c.more)}</div>
+    <div class="src">${esc(c.label)} 문${c.no} ${c.mark} 지문</div>`;
+  $("law-ver").textContent = `조문: 국가법령정보센터 민법 (${window.DATA.lawVersion} 시행)`;
+}
+
+function start(DATA_) {
+  window.DATA = DATA_;
+  const days = DATA_.days;
+  const q = new URLSearchParams(location.search);
+  if (q.get("code")) {
+    $("connect").hidden = false;
+    $("code-url").value = location.href;
+    $("copy-code").addEventListener("click", () => {
+      navigator.clipboard.writeText(location.href).then(() => { $("copy-code").textContent = "복사했어요"; })
+        .catch(() => { $("code-url").select(); });
+    });
+  }
+  const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+  const avail = days.filter((d) => d.date <= today);
+  let idx = days.findIndex((d) => d.date === q.get("d"));
+  if (idx < 0) idx = Math.max(0, avail.length - 1);
+  const nav = $("daynav");
+  nav.hidden = false;
+  const show = (i) => {
+    idx = i; render(days[i]);
+    $("navlabel").textContent = days[i].dateLabel;
+    $("prev").disabled = i === 0;
+    $("next").disabled = i + 1 >= days.length || days[i + 1].date > today;
+  };
+  $("prev").addEventListener("click", () => { show(idx - 1); scrollTo(0, 0); });
+  $("next").addEventListener("click", () => { show(idx + 1); scrollTo(0, 0); });
+  show(idx);
+}
+fetch("data/days.json", { cache: "no-store" }).then((r) => r.json()).then(start)
+  .catch(() => { $("h-topic").textContent = "카드를 불러오지 못했어요. 잠시 뒤 새로고침해 주세요."; });
+</script>
+</body>
+</html>
