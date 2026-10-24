@@ -131,7 +131,8 @@ def send():
     exams = " · ".join(day["exams"])
     nth = f" {day['day']}일차" if day.get("day") else ""
     text = (f"📘 {day['dateLabel']} 오늘의 민법{nth}\n"
-            f"주제: {day['topic']}\n\n"
+            f"주제: {day['topic']}" + (f" ({day['seq']})" if day.get("seq") else "") + "\n"
+            + (f"초점: {day['focus']}\n" if day.get("focus") else "") + "\n"
             f"{exams} 기출 OX 5문\n조문 3개 · 판례 1개")
     send_memo(j["access_token"], {
         "object_type": "text", "text": text[:200],

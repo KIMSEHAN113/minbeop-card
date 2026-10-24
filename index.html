@@ -194,9 +194,9 @@ const store = {
 function render(day) {
   const key = "ox-" + day.date;
   const picks = store.get(key);
-  $("h-date").textContent = day.dateLabel + " · 민법 " + (day.day ? day.day + "일차" : "");
+  $("h-date").textContent = day.dateLabel + " · 민법 " + (day.day ? day.day + "일차" : "") + (day.seq ? " · 이 주제 " + day.seq : "");
   $("h-topic").textContent = day.topic;
-  $("h-sub").textContent = `같은 주제를 ${day.exams.length}개 시험 기출에서 골라 OX로 풀어요.`;
+  $("h-sub").textContent = (day.focus ? `오늘의 초점: ${day.focus}. ` : "") + `${day.exams.length}개 시험 기출에서 골라 OX로 풀어요.`;
   $("h-chips").innerHTML = `<span class="chip">${esc(day.part)}</span>` + day.exams.map((e) => `<span class="ex" data-e="${e}">${e}</span>`).join("");
   $("kc-date").textContent = day.dateLabel + " · 오늘의 민법";
   $("kc-topic").textContent = day.topic;
