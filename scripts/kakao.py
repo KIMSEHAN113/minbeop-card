@@ -129,7 +129,8 @@ def send():
               else "  ! 리프레시 토큰 갱신 실패 (GH_PAT 확인 필요)")
     url = os.environ["CARD_URL"].rstrip("/") + f"/?d={day['date']}"
     exams = " · ".join(day["exams"])
-    text = (f"📘 {day['dateLabel']} 오늘의 민법\n"
+    nth = f" {day['day']}일차" if day.get("day") else ""
+    text = (f"📘 {day['dateLabel']} 오늘의 민법{nth}\n"
             f"주제: {day['topic']}\n\n"
             f"{exams} 기출 OX 5문\n조문 3개 · 판례 1개")
     send_memo(j["access_token"], {

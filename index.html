@@ -194,7 +194,7 @@ const store = {
 function render(day) {
   const key = "ox-" + day.date;
   const picks = store.get(key);
-  $("h-date").textContent = day.dateLabel + " · 민법";
+  $("h-date").textContent = day.dateLabel + " · 민법 " + (day.day ? day.day + "일차" : "");
   $("h-topic").textContent = day.topic;
   $("h-sub").textContent = `같은 주제를 ${day.exams.length}개 시험 기출에서 골라 OX로 풀어요.`;
   $("h-chips").innerHTML = `<span class="chip">${esc(day.part)}</span>` + day.exams.map((e) => `<span class="ex" data-e="${e}">${e}</span>`).join("");
@@ -276,7 +276,7 @@ function start(DATA_) {
   nav.hidden = false;
   const show = (i) => {
     idx = i; render(days[i]);
-    $("navlabel").textContent = days[i].dateLabel;
+    $("navlabel").textContent = days[i].dateLabel + (days[i].day ? " · " + days[i].day + "일차" : "");
     $("prev").disabled = i === 0;
     $("next").disabled = i + 1 >= days.length || days[i + 1].date > today;
   };
