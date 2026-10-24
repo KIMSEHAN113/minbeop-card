@@ -2,7 +2,7 @@ name: Send card (매일 아침 카톡)
 
 on:
   schedule:
-    - cron: "41 21 * * *"  # 매일 06:41 (한국시간). GitHub 예약은 보통 10~20분 늦게 돌아서 7시 전후에 도착
+    - cron: "7 20 * * *"  # 매일 05:07 (한국시간)에 시작해서 07:00까지 기다렸다 보냄. GitHub 예약이 1~2시간 밀려도 7시 전후 도착
   workflow_dispatch:
     inputs:
       date:
@@ -12,7 +12,15 @@ on:
 jobs:
   send:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     steps:
+      - name: Wait until 07:00 KST
+        if: github.event_name == 'schedule'
+        run: |
+          now=$(TZ=Asia/Seoul date +%s)
+          target=$(TZ=Asia/Seoul date -d "$(TZ=Asia/Seoul date +%F) 07:00" +%s)
+          wait=$((target - now))
+          if [ $wait -gt 0 ]; then echo "07:00 KST까지 ${wait}초 대기"; sleep $wait; else echo "이미 07:00 지남, 바로 발송"; fi
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
