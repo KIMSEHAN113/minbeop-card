@@ -53,7 +53,7 @@ def mask(value):
 
 def save_secret(name, value):
     """GH_PAT 가 있으면 GitHub Secret 을 갱신한다. 성공 여부를 돌려준다."""
-    repo, pat = os.environ.get("GITHUB_REPOSITORY"), os.environ.get("GH_PAT")
+    repo, pat = os.environ.get("GITHUB_REPOSITORY"), os.environ.get("GH_PAT", "").strip()
     if not (repo and pat):
         return False
     r = subprocess.run(["gh", "secret", "set", name, "--repo", repo, "--body", value],
@@ -80,7 +80,20 @@ def send_memo(access, tpl):
     print("카카오톡 발송 완료" if r.get("result_code") == 0 else f"발송 응답: {r}")
 
 
+def check_pat():
+    """인가 코드를 쓰기 전에 GH_PAT 로 Secret 을 쓸 수 있는지 먼저 확인한다 (코드는 한 번만 쓸 수 있다)."""
+    repo, pat = os.environ.get("GITHUB_REPOSITORY"), os.environ.get("GH_PAT", "").strip()
+    if not (repo and pat):
+        raise SystemExit("GH_PAT Secret 이 비어 있어요.")
+    r = subprocess.run(["gh", "api", f"repos/{repo}/actions/secrets/public-key", "--jq", ".key_id"],
+                       env={**os.environ, "GH_TOKEN": pat}, capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"GH_PAT 로 Secret 을 쓸 수 없어요 (인가 코드는 아직 쓰지 않았어요): {r.stderr.strip()[:150]}")
+    print("GH_PAT 확인 완료")
+
+
 def setup():
+    check_pat()
     code = os.environ.get("KAKAO_AUTH_CODE", "").strip()
     if not code and os.environ.get("GITHUB_EVENT_PATH"):  # 워크플로 입력은 이벤트 파일에서 읽어 로그에 안 남긴다
         event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
