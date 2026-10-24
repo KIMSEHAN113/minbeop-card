@@ -121,6 +121,7 @@ section { display: grid; gap: 12px; }
 .daynav button { background: var(--paper); color: var(--ink); padding: 6px 12px; font-size: 14px; }
 .daynav button:disabled { opacity: .35; cursor: default; }
 .daynav span { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ctx { font-size: 14px; color: var(--muted); background: var(--bg); border-radius: 8px; padding: 8px 10px; }
 footer { font-size: 12px; color: var(--muted); display: grid; gap: 4px; border-top: 1px solid var(--line); padding-top: 14px; }
 @media (prefers-reduced-motion: no-preference) { .ans { animation: in .25s ease-out; } @keyframes in { from { transform: translateY(-4px); } } }
 </style>
@@ -208,7 +209,7 @@ function render(day) {
   day.ox.forEach((q, i) => {
     const el = document.createElement("div");
     el.className = "q";
-    el.innerHTML = `<div class="src-badge"><span class="no">${i + 1}</span><span class="ex" data-e="${q.exam}">${q.exam}</span><span class="yr">${q.year}년 기출 · 문${q.no} ${q.mark}</span></div><p>${esc(q.text)}</p>
+    el.innerHTML = `<div class="src-badge"><span class="no">${i + 1}</span><span class="ex" data-e="${q.exam}">${q.exam}</span><span class="yr">${q.year}년 기출 · 문${q.no} ${q.mark}</span></div>${q.ctx ? `<p class="ctx">${esc(q.ctx)}</p>` : ""}<p>${esc(q.text)}</p>
       <div class="ox"><button type="button" data-v="O" aria-label="맞다 O">O</button><button type="button" data-v="X" aria-label="틀리다 X">X</button></div>`;
     const reveal = (v) => {
       el.classList.add("done");
