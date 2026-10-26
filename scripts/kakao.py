@@ -133,7 +133,7 @@ def send():
     text = (f"📘 {day['dateLabel']} 오늘의 민법{nth}\n"
             f"주제: {day['topic']}" + (f" ({day['seq']})" if day.get("seq") else "") + "\n"
             + (f"초점: {day['focus']}\n" if day.get("focus") else "") + "\n"
-            f"{exams} 기출 OX 5문\n조문 3개 · 판례 1개")
+            f"{exams} 기출 OX {len(day['ox'])}문\n조문 3개 · 판례 1개")
     send_memo(j["access_token"], {
         "object_type": "text", "text": text[:200],
         "link": {"web_url": url, "mobile_web_url": url}, "button_title": "오늘 문제 풀기"})

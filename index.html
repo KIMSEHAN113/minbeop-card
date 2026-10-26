@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
 <style>
-/* 휴대폰 한 손 세로 스크롤: 머리말 → OX 5문 → 조문 3 → 판례 1. 법전 같은 명조 제목 + 깔끔한 고딕 본문 */
+/* 휴대폰 한 손 세로 스크롤: 머리말 → OX 문항 → 조문 3 → 판례 1. 법전 같은 명조 제목 + 깔끔한 고딕 본문 */
 :root {
   --bg: #f3f5f8;
   --paper: #ffffff;
@@ -162,7 +162,7 @@ footer { font-size: 12px; color: var(--muted); display: grid; gap: 4px; border-t
   </header>
 
   <section aria-labelledby="s-ox">
-    <div class="sec-head"><h2 id="s-ox">기출 OX 5문</h2><span class="score" id="score"></span></div>
+    <div class="sec-head"><h2 id="s-ox">기출 OX</h2><span class="score" id="score"></span></div>
     <div id="ox" style="display:grid;gap:12px"></div>
   </section>
 
@@ -201,7 +201,8 @@ function render(day) {
   $("h-chips").innerHTML = `<span class="chip">${esc(day.part)}</span>` + day.exams.map((e) => `<span class="ex" data-e="${e}">${e}</span>`).join("");
   $("kc-date").textContent = day.dateLabel + " · 오늘의 민법";
   $("kc-topic").textContent = day.topic;
-  $("kc-title").textContent = `${day.exams.length}개 시험 기출 OX 5문 · 조문 3 · 판례 1`;
+  $("kc-title").textContent = `${day.exams.length}개 시험 기출 OX ${day.ox.length}문 · 조문 3 · 판례 1`;
+  $("s-ox").textContent = `기출 OX ${day.ox.length}문`;
   $("kc-desc").textContent = day.exams.join(" · ") + " 기출";
 
   const ox = $("ox");
@@ -238,7 +239,7 @@ function render(day) {
   function updateScore() {
     const done = Object.keys(picks).length;
     const right = Object.entries(picks).filter(([i, v]) => day.ox[i].answer === v).length;
-    $("score").textContent = done ? `${done}/5 풀이 · ${right}개 맞힘` : "탭해서 풀어 보세요";
+    $("score").textContent = done ? `${done}/${day.ox.length} 풀이 · ${right}개 맞힘` : "탭해서 풀어 보세요";
   }
   updateScore();
 
