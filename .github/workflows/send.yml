@@ -1,31 +1,68 @@
 name: Send card (매일 아침 카톡)
 
+# GitHub 예약 실행은 아침에 1~4시간씩 밀린다. 그래서 새벽 3~6시에 네 번 예약해 두고,
+# 먼저 시작된 작업이 07:00 KST까지 기다렸다가 보낸다. 보낸 뒤 sent-날짜 태그를 남겨
+# 나머지 작업은 같은 날 다시 보내지 않는다.
 on:
   schedule:
-    - cron: "7 20 * * *"  # 매일 05:07 (한국시간)에 시작해서 07:00까지 기다렸다 보냄. GitHub 예약이 1~2시간 밀려도 7시 전후 도착
+    - cron: "7 18 * * *"   # 03:07 KST
+    - cron: "7 19 * * *"   # 04:07 KST
+    - cron: "7 20 * * *"   # 05:07 KST
+    - cron: "7 21 * * *"   # 06:07 KST
   workflow_dispatch:
     inputs:
       date:
         description: "보낼 카드 날짜 (YYYY-MM-DD, 비우면 오늘)"
         required: false
 
+permissions:
+  contents: write
+
+concurrency:
+  group: kakao-send
+  cancel-in-progress: false
+
 jobs:
   send:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 300
     steps:
-      - name: Wait until 07:00 KST
+      - uses: actions/checkout@v4
+
+      - name: Skip if already sent today
+        id: check
         if: github.event_name == 'schedule'
+        run: |
+          tag="sent-$(TZ=Asia/Seoul date +%F)"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+            echo "오늘($tag) 이미 보냄, 건너뜀"; echo "skip=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Wait until 07:00 KST
+        if: github.event_name == 'schedule' && steps.check.outputs.skip != '1'
         run: |
           now=$(TZ=Asia/Seoul date +%s)
           target=$(TZ=Asia/Seoul date -d "$(TZ=Asia/Seoul date +%F) 07:00" +%s)
           wait=$((target - now))
           if [ $wait -gt 0 ]; then echo "07:00 KST까지 ${wait}초 대기"; sleep $wait; else echo "이미 07:00 지남, 바로 발송"; fi
-      - uses: actions/checkout@v4
+
+      - name: Check again after waiting
+        id: check2
+        if: github.event_name == 'schedule' && steps.check.outputs.skip != '1'
+        run: |
+          tag="sent-$(TZ=Asia/Seoul date +%F)"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+            echo "기다리는 동안 이미 보냄, 건너뜀"; echo "skip=1" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-python@v5
+        if: steps.check.outputs.skip != '1' && steps.check2.outputs.skip != '1'
         with:
           python-version: "3.12"
+
       - name: Send KakaoTalk
+        id: send
+        if: steps.check.outputs.skip != '1' && steps.check2.outputs.skip != '1'
         env:
           KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
@@ -36,3 +73,9 @@ jobs:
         run: |
           if [ -z "$KAKAO_REFRESH_TOKEN" ]; then echo "카카오 연결 전이라 건너뜀"; exit 0; fi
           python scripts/kakao.py
+
+      - name: Mark sent
+        if: github.event_name == 'schedule' && steps.send.outcome == 'success'
+        run: |
+          tag="sent-$(TZ=Asia/Seoul date +%F)"
+          git tag "$tag" && git push origin "refs/tags/$tag"
