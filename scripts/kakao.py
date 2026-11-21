@@ -24,7 +24,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DAYS = ROOT / "data" / "days.json"
 KST = timezone(timedelta(hours=9))
 
 
@@ -116,27 +115,43 @@ def setup():
         "link": {"web_url": url, "mobile_web_url": url}, "button_title": "카드 미리 보기"})
 
 
+UNITS = [  # (데이터 파일, 이름, 아이콘, 카드 주소 추가 인자)
+    ("days.json", "1단원 민법총칙", "📘", ""),
+    ("days2.json", "2단원 물권법", "📗", "&u=2"),
+]
+
+
 def send():
     today = os.environ.get("SEND_DATE", "").strip() or datetime.now(KST).date().isoformat()
-    data = json.loads(DAYS.read_text(encoding="utf-8"))
-    day = next((d for d in data["days"] if d["date"] == today), None)
-    if not day:
-        print(f"{today} 카드가 아직 없어 건너뛰어요.")
+    cards = []
+    for fname, unit, icon, q in UNITS:
+        path = ROOT / "data" / fname
+        if not path.exists():
+            continue
+        data = json.loads(path.read_text(encoding="utf-8"))
+        day = next((d for d in data["days"] if d["date"] == today), None)
+        if day:
+            cards.append((unit, icon, q, day))
+        else:
+            print(f"{unit}: {today} 카드가 아직 없어 건너뛰어요.")
+    if not cards:
         return
     j = token_request({"grant_type": "refresh_token", "refresh_token": os.environ["KAKAO_REFRESH_TOKEN"]})
     if j.get("refresh_token"):  # 만료 한 달 전부터 새 리프레시 토큰이 온다
         print("리프레시 토큰 갱신 완료" if save_secret("KAKAO_REFRESH_TOKEN", j["refresh_token"])
               else "  ! 리프레시 토큰 갱신 실패 (GH_PAT 확인 필요)")
-    url = os.environ["CARD_URL"].rstrip("/") + f"/?d={day['date']}"
-    exams = " · ".join(day["exams"])
-    nth = f" {day['day']}일차" if day.get("day") else ""
-    text = (f"📘 {day['dateLabel']} 오늘의 민법{nth}\n"
-            f"주제: {day['topic']}" + (f" ({day['seq']})" if day.get("seq") else "") + "\n"
-            + (f"초점: {day['focus']}\n" if day.get("focus") else "") + "\n"
-            f"{exams} 기출 OX {len(day['ox'])}문\n조문 3개 · 판례 1개")
-    send_memo(j["access_token"], {
-        "object_type": "text", "text": text[:200],
-        "link": {"web_url": url, "mobile_web_url": url}, "button_title": "오늘 문제 풀기"})
+    for unit, icon, q, day in cards:  # 단원마다 메시지 1개씩
+        url = os.environ["CARD_URL"].rstrip("/") + f"/?d={day['date']}{q}"
+        exams = " · ".join(day["exams"])
+        nth = f" {day['day']}일차" if day.get("day") else ""
+        text = (f"{icon} {day['dateLabel']} {unit}{nth}\n"
+                f"주제: {day['topic']}" + (f" ({day['seq']})" if day.get("seq") else "") + "\n"
+                + (f"초점: {day['focus'][:60] + ('…' if len(day['focus']) > 60 else '')}\n" if day.get("focus") else "") + "\n"
+                f"{exams} 기출 OX {len(day['ox'])}문\n조문 3개 · 판례 1개")
+        print(unit, end=": ")
+        send_memo(j["access_token"], {
+            "object_type": "text", "text": text[:200],
+            "link": {"web_url": url, "mobile_web_url": url}, "button_title": "오늘 문제 풀기"})
 
 
 if __name__ == "__main__":

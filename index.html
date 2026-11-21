@@ -193,13 +193,13 @@ const store = {
 };
 
 function render(day) {
-  const key = "ox-" + day.date;
+  const key = (window.DATA.unit && window.DATA.unit.startsWith("2") ? "ox2-" : "ox-") + day.date;
   const picks = store.get(key);
-  $("h-date").textContent = day.dateLabel + " · 민법 " + (day.day ? day.day + "일차" : "") + (day.seq ? " · 이 주제 " + day.seq : "");
+  $("h-date").textContent = day.dateLabel + " · " + (window.DATA.unit || "민법") + " " + (day.day ? day.day + "일차" : "") + (day.seq ? " · 이 주제 " + day.seq : "");
   $("h-topic").textContent = day.topic;
   $("h-sub").textContent = (day.focus ? `오늘의 초점: ${day.focus}. ` : "") + `${day.exams.length}개 시험 기출에서 골라 OX로 풀어요.`;
   $("h-chips").innerHTML = `<span class="chip">${esc(day.part)}</span>` + day.exams.map((e) => `<span class="ex" data-e="${e}">${e}</span>`).join("");
-  $("kc-date").textContent = day.dateLabel + " · 오늘의 민법";
+  $("kc-date").textContent = day.dateLabel + " · " + (window.DATA.unit || "오늘의 민법");
   $("kc-topic").textContent = day.topic;
   $("kc-title").textContent = `${day.exams.length}개 시험 기출 OX ${day.ox.length}문 · 조문 3 · 판례 1`;
   $("s-ox").textContent = `기출 OX ${day.ox.length}문`;
@@ -286,7 +286,8 @@ function start(DATA_) {
   $("next").addEventListener("click", () => { show(idx + 1); scrollTo(0, 0); });
   show(idx);
 }
-fetch("data/days.json", { cache: "no-store" }).then((r) => r.json()).then(start)
+const UNIT2 = new URLSearchParams(location.search).get("u") === "2";
+fetch(UNIT2 ? "data/days2.json" : "data/days.json", { cache: "no-store" }).then((r) => r.json()).then(start)
   .catch(() => { $("h-topic").textContent = "카드를 불러오지 못했어요. 잠시 뒤 새로고침해 주세요."; });
 </script>
 </body>
