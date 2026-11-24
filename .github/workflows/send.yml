@@ -3,6 +3,8 @@ name: Send card (매일 아침 카톡)
 # GitHub 예약 실행은 아침에 1~4시간씩 밀린다. 그래서 새벽 3~6시에 네 번 예약해 두고,
 # 먼저 시작된 작업이 07:00 KST까지 기다렸다가 보낸다. 보낸 뒤 sent-날짜 태그를 남겨
 # 나머지 작업은 같은 날 다시 보내지 않는다.
+# 2026-11-24 예약 4번이 모두 실행되지 않아 카드가 안 감 → 집 Mac(LaunchAgent)이 매일 07:00·07:30
+# 날짜 없이 workflow_dispatch 로 실행한다. 날짜 없는 수동 실행도 예약과 똑같이 태그로 중복을 막는다.
 on:
   schedule:
     - cron: "7 18 * * *"   # 03:07 KST
@@ -25,13 +27,15 @@ concurrency:
 jobs:
   send:
     runs-on: ubuntu-latest
+    env:
+      AUTO: ${{ github.event_name == 'schedule' || inputs.date == '' }}
     timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
 
       - name: Skip if already sent today
         id: check
-        if: github.event_name == 'schedule'
+        if: env.AUTO == 'true'
         run: |
           tag="sent-$(TZ=Asia/Seoul date +%F)"
           if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
@@ -39,7 +43,7 @@ jobs:
           fi
 
       - name: Wait until 07:00 KST
-        if: github.event_name == 'schedule' && steps.check.outputs.skip != '1'
+        if: env.AUTO == 'true' && steps.check.outputs.skip != '1'
         run: |
           now=$(TZ=Asia/Seoul date +%s)
           target=$(TZ=Asia/Seoul date -d "$(TZ=Asia/Seoul date +%F) 07:00" +%s)
@@ -48,7 +52,7 @@ jobs:
 
       - name: Check again after waiting
         id: check2
-        if: github.event_name == 'schedule' && steps.check.outputs.skip != '1'
+        if: env.AUTO == 'true' && steps.check.outputs.skip != '1'
         run: |
           tag="sent-$(TZ=Asia/Seoul date +%F)"
           if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
@@ -75,7 +79,7 @@ jobs:
           python scripts/kakao.py
 
       - name: Mark sent
-        if: github.event_name == 'schedule' && steps.send.outcome == 'success'
+        if: env.AUTO == 'true' && steps.send.outcome == 'success'
         run: |
           tag="sent-$(TZ=Asia/Seoul date +%F)"
           git tag "$tag" && git push origin "refs/tags/$tag"
