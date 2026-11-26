@@ -193,7 +193,7 @@ const store = {
 };
 
 function render(day) {
-  const key = (window.DATA.unit && window.DATA.unit.startsWith("2") ? "ox2-" : "ox-") + day.date;
+  const key = "ox" + (UNIT === "1" ? "" : UNIT) + "-" + day.date;
   const picks = store.get(key);
   $("h-date").textContent = day.dateLabel + " · " + (window.DATA.unit || "민법") + " " + (day.day ? day.day + "일차" : "") + (day.seq ? " · 이 주제 " + day.seq : "");
   $("h-topic").textContent = day.topic;
@@ -248,17 +248,18 @@ function render(day) {
     const m = head.match(/^(제[^)]+\))\s*(.*)$/);
     const title = m ? m[1] : head;
     const body = [m && m[2] ? m[2] : "", ...rest].filter(Boolean).join("\n");
-    return `<div class="art"><h3>민법 ${esc(title)}</h3><p>${esc(body)}</p></div>`;
+    return `<div class="art"><h3>${esc(LAWNAME)} ${esc(title)}</h3><p>${esc(body)}</p></div>`;
   }).join("");
 
   const c = day.case;
   $("case").innerHTML = `<div class="src-badge"><span class="ex" data-e="${c.exam}">${c.exam}</span><span class="yr">${c.year}년 기출 · 문${c.no} ${c.mark} · 정답 ${c.answer}</span></div><blockquote>${esc(c.text)}</blockquote>
     <div class="point"><b>포인트</b> ${esc(c.key)}</div><div class="point"><b>같이 알아두기</b> ${esc(c.more)}</div>
     <div class="src">${esc(c.label)} 문${c.no} ${c.mark} 지문</div>`;
-  $("law-ver").textContent = `조문: 국가법령정보센터 민법 (${window.DATA.lawVersion} 시행)`;
+  $("law-ver").textContent = `조문: 국가법령정보센터 ${LAWNAME} (${window.DATA.lawVersion} 시행)`;
 }
 
 function start(DATA_) {
+  if (DATA_.lawName) { LAWNAME = DATA_.lawName; document.title = `오늘의 ${DATA_.lawName.replace("대한민국", "")} 카드`; }
   window.DATA = DATA_;
   const days = DATA_.days;
   const q = new URLSearchParams(location.search);
@@ -286,8 +287,9 @@ function start(DATA_) {
   $("next").addEventListener("click", () => { show(idx + 1); scrollTo(0, 0); });
   show(idx);
 }
-const UNIT2 = new URLSearchParams(location.search).get("u") === "2";
-fetch(UNIT2 ? "data/days2.json" : "data/days.json", { cache: "no-store" }).then((r) => r.json()).then(start)
+const UNIT = ["2", "3"].includes(new URLSearchParams(location.search).get("u")) ? new URLSearchParams(location.search).get("u") : "1";
+let LAWNAME = "민법";
+fetch(UNIT === "1" ? "data/days.json" : `data/days${UNIT}.json`, { cache: "no-store" }).then((r) => r.json()).then(start)
   .catch(() => { $("h-topic").textContent = "카드를 불러오지 못했어요. 잠시 뒤 새로고침해 주세요."; });
 </script>
 </body>
